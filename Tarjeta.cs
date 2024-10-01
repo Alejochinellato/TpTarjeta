@@ -2,14 +2,28 @@ namespace TransporteUrbano
 {
     public class Tarjeta
     {
+
+
         private decimal saldo;
         private const decimal LimiteSaldo = 9900m;
         private const decimal CostoPasaje = 940m; 
+
         private static readonly decimal[] MontosAceptados = { 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000 };
 
         public Tarjeta(decimal saldoInicial)
         {
             saldo = saldoInicial;
+        }
+
+        public virtual bool DescontarPasaje()
+        {
+            if (saldo >= CostoPasaje)
+            {
+                saldo -= CostoPasaje;
+                return true;
+            }
+
+            return false;
         }
 
         public bool CargarSaldo(decimal monto)
@@ -31,20 +45,43 @@ namespace TransporteUrbano
             return true;
         }
 
-        public bool DescontarPasaje()
+      public decimal ObtenerSaldo()
         {
-            if (saldo >= CostoPasaje)
+            return saldo;
+        }
+    }
+
+    public class MedioBoleto : Tarjeta
+    {
+        private const decimal CostoMedioPasaje = CostoPasaje / 2;
+
+        public MedioBoleto(decimal saldoInicial) : base(saldoInicial)
+        {
+        }
+
+        public override bool DescontarPasaje()
+        {
+            if (saldo >= CostoMedioPasaje)
             {
-                saldo -= CostoPasaje;
+                saldo -= CostoMedioPasaje;
+
                 return true;
             }
 
             return false;
         }
+    }
 
-        public decimal ObtenerSaldo()
+    public class FranquiciaCompleta : Tarjeta
+    {
+        public FranquiciaCompleta(decimal saldoInicial) : base(saldoInicial)
         {
-            return saldo;
+        }
+
+        public override bool DescontarPasaje()
+        {
+            // La franquicia completa no necesita saldo
+            return true;
         }
     }
 }

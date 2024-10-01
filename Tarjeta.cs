@@ -8,7 +8,7 @@ namespace TransporteUrbano
         private decimal saldo;
         private const decimal LimiteSaldo = 9900m;
         private const decimal CostoPasaje = 940m;
-        private const decimal LimiteNegativo = -480m;
+        private const decimal LimiteNegativo = -480m; 
         private static readonly decimal[] MontosAceptados = { 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000 };
 
         public Tarjeta(decimal saldoInicial)

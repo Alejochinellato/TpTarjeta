@@ -58,11 +58,9 @@ namespace TransporteUrbano
 
         public override bool DescontarPasaje()
         {
-            if (saldo >= CostoMedioPasaje)
+            if (saldo >= CostoMedioPasaje || saldo - CostoMedioPasaje >= LimiteNegativo)
             {
                 saldo -= CostoMedioPasaje;
-
-
                 return true;
             }
 

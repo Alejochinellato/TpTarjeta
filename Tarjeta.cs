@@ -36,13 +36,18 @@ namespace TransporteUrbano
             return true;
         }
 
-        public bool DescontarPasaje()
+       public virtual bool DescontarPasaje()
         {
             if (saldo >= CostoPasaje || saldo - CostoPasaje >= LimiteNegativo)
             {
                 saldo -= CostoPasaje;
-              
-      public decimal ObtenerSaldo()
+                return true;
+            }
+
+            return false;
+        }
+
+        public decimal ObtenerSaldo()
         {
             return saldo;
         }

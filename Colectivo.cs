@@ -5,7 +5,7 @@ namespace TransporteUrbano
     public class Colectivo
     {
         private string linea;
-        private const decimal Tarifa = 940m;
+        private static int viajeContador = 1;
 
         public Colectivo(string linea)
         {
@@ -14,8 +14,9 @@ namespace TransporteUrbano
 
         public Boleto PagarCon(Tarjeta tarjeta)
         {
-            if (tarjeta.DescontarPasaje(Tarifa))
+            if (tarjeta.DescontarPasaje())
             {
+                decimal montoCobrado = tarjeta is MedioBoleto ? Tarjeta.CostoPasaje / 2 : Tarjeta.CostoPasaje;
                 return new Boleto(linea, Tarifa);
             }
 
@@ -23,4 +24,4 @@ namespace TransporteUrbano
         }
     }
 }
-}
+

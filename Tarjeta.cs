@@ -2,13 +2,10 @@ namespace TransporteUrbano
 {
     public class Tarjeta
     {
-
-
-        private decimal saldo;
-        private const decimal LimiteSaldo = 9900m;
-        private const decimal CostoPasaje = 940m;
-        private const decimal LimiteNegativo = -480m; 
-
+ public decimal saldo;
+        public const decimal CostoPasaje = 940m;  
+        public const decimal LimiteSaldo = 9900m;
+        public const decimal LimiteNegativo = -480m;
 
         private static readonly decimal[] MontosAceptados = { 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000 };
 
@@ -19,6 +16,7 @@ namespace TransporteUrbano
 
         public bool CargarSaldo(decimal monto)
         {
+  
             if (!MontosAceptados.Contains(monto))
             {
                 return false;

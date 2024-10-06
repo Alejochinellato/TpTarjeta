@@ -27,14 +27,14 @@ namespace TransporteUrbano
                     break;
             }
 
-            // Crear un colectivo de la línea "123" como ejemplo.
+      
             Colectivo colectivo = new Colectivo("123");
 
             bool continuar = true;
 
             while (continuar)
             {
-                MostrarMenu();  // Llamada a la función que dibuja el menú con bordes
+                MostrarMenu(); 
 
                 Console.Write("Elige una opción: ");
                 string opcion = Console.ReadLine();
@@ -65,10 +65,10 @@ namespace TransporteUrbano
             }
         }
 
-        // Método para mostrar el menú con bordes
+
         static void MostrarMenu()
         {
-             // Limpiar la pantalla antes de mostrar el menú
+            
             Console.WriteLine("-------------------------------");
             Console.WriteLine("|          OPCIONES           |");
             Console.WriteLine("-------------------------------");

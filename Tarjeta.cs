@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace TransporteUrbano
 {
     public class Tarjeta

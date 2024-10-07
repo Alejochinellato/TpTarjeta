@@ -4,7 +4,7 @@ namespace TransporteUrbano
 {
     public class Tarjeta
     {
- public decimal saldo;
+        public decimal saldo;
         public const decimal CostoPasaje = 940m;  
         public const decimal LimiteSaldo = 9900m;
         public const decimal LimiteNegativo = -480m;
@@ -18,7 +18,6 @@ namespace TransporteUrbano
 
         public bool CargarSaldo(decimal monto)
         {
-  
             if (!MontosAceptados.Contains(monto))
             {
                 return false;
@@ -36,7 +35,7 @@ namespace TransporteUrbano
             return true;
         }
 
-       public virtual bool DescontarPasaje()
+        public virtual bool DescontarPasaje()
         {
             if (saldo >= CostoPasaje || saldo - CostoPasaje >= LimiteNegativo)
             {
@@ -75,16 +74,34 @@ namespace TransporteUrbano
 
     public class FranquiciaCompleta : Tarjeta
     {
+        private int viajesGratuitosHoy = 0;
+
         public FranquiciaCompleta(decimal saldoInicial) : base(saldoInicial)
         {
         }
 
+        public int ViajesGratuitosHoy
+        {
+            get { return viajesGratuitosHoy; }
+        }
+
         public override bool DescontarPasaje()
         {
-            // La franquicia completa no necesita saldo
-            return true;
+            if (viajesGratuitosHoy < 2) // Permitir hasta 2 viajes gratuitos
+            {
+                viajesGratuitosHoy++;
+                return true; // acá el gratuito queda registrado
+            }
+            else
+            {
+                if (saldo >= CostoPasaje || saldo - CostoPasaje >= LimiteNegativo)
+                {
+                    saldo -= CostoPasaje; 
+                    return true; 
+                }
+                return false; // saldo insuficiente
+            }
         }
     }
+
 }
-
-

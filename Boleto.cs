@@ -8,20 +8,25 @@ namespace TransporteUrbano
         public string Tipo { get; }
         public string Linea { get; }
         public decimal SaldoRestante { get; }
-        public int ViajeId { get; }
+        public int NumeroViaje { get; }
 
-        public Boleto(decimal monto, string tipo, string linea, decimal saldoRestante, int viajeId)
+        public Boleto(decimal monto, string tipo, string linea, decimal saldoRestante, int numeroViaje)
         {
             Monto = monto;
             Tipo = tipo;
             Linea = linea;
             SaldoRestante = saldoRestante;
-            ViajeId = viajeId;
+            NumeroViaje = numeroViaje;
         }
 
-        public void MostrarDetalles()
+        public void Imprimir()
         {
-            Console.WriteLine($"Boleto {ViajeId} - Tipo: {Tipo} - Línea: {Linea} - Monto: ${Monto} - Saldo restante: ${SaldoRestante}");
+            Console.WriteLine($"Boleto #{NumeroViaje}:");
+            Console.WriteLine($"Tipo: {Tipo}");
+            Console.WriteLine($"Línea: {Linea}");
+            Console.WriteLine($"Monto: ${Monto}");
+            Console.WriteLine($"Saldo restante: ${SaldoRestante}");
+            Console.WriteLine("-----------------------------");
         }
     }
 }

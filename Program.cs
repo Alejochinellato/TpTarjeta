@@ -27,7 +27,6 @@ namespace TransporteUrbano
                     break;
             }
 
-      
             Colectivo colectivo = new Colectivo("123");
 
             bool continuar = true;
@@ -68,7 +67,7 @@ namespace TransporteUrbano
 
         static void MostrarMenu()
         {
-            
+
             Console.WriteLine("-------------------------------");
             Console.WriteLine("|          OPCIONES           |");
             Console.WriteLine("-------------------------------");
@@ -86,7 +85,7 @@ namespace TransporteUrbano
 
         static void CargarSaldo(Tarjeta tarjeta)
         {
-            Console.Write("Ingresa el monto a cargar (Recuerde que las opciones de craga son: 2000-3000-4000-5000-6000-7000-8000-9000): ");
+            Console.Write("Ingresa el monto a cargar (Recuerde que las opciones de carga son: 2000-3000-4000-5000-6000-7000-8000-9000): ");
             decimal montoCarga;
             if (!decimal.TryParse(Console.ReadLine(), out montoCarga))
             {
@@ -106,7 +105,6 @@ namespace TransporteUrbano
             }
         }
 
-
         static void PagarBoleto(Tarjeta tarjeta, Colectivo colectivo)
         {
             try
@@ -116,7 +114,7 @@ namespace TransporteUrbano
                 if (boleto != null)
                 {
                     Console.WriteLine("Pago realizado:");
-                    boleto.DatosBoleto();
+                    boleto.MostrarDetalles();
                 }
                 else
                 {

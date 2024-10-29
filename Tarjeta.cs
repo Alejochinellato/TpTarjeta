@@ -72,36 +72,39 @@ namespace TransporteUrbano
         }
     }
 
-    public class FranquiciaCompleta : Tarjeta
+       public FranquiciaCompleta(decimal saldoInicial) : base(saldoInicial)
     {
-        private int viajesGratuitosHoy = 0;
+    }
 
-        public FranquiciaCompleta(decimal saldoInicial) : base(saldoInicial)
+    public override bool DescontarPasaje()
+    {
+        if (EsNuevoDia())
         {
+            ReiniciarViajesDiarios();
         }
 
-        public int ViajesGratuitosHoy
+        if (viajesGratuitosHoy < MaxViajesGratuitos)
         {
-            get { return viajesGratuitosHoy; }
+            viajesGratuitosHoy++;
+            ultimaFechaViaje = DateTime.Now; // Actualizar fecha del último viaje
+            return true; // Viaje gratiiiis
         }
-
-        public override bool DescontarPasaje()
+        else
         {
-            if (viajesGratuitosHoy < 2) // Permitir hasta 2 viajes gratuitos
-            {
-                viajesGratuitosHoy++;
-                return true; // acá el gratuito queda registrado
-            }
-            else
-            {
-                if (saldo >= CostoPasaje || saldo - CostoPasaje >= LimiteNegativo)
-                {
-                    saldo -= CostoPasaje; 
-                    return true; 
-                }
-                return false; // saldo insuficiente
-            }
+            
+            return base.DescontarPasaje();
         }
     }
+
+    protected override void ReiniciarViajesDiarios()
+    {
+        viajesGratuitosHoy = 0;
+    }
+
+    public int ViajesGratuitosHoy
+    {
+        get { return viajesGratuitosHoy; }
+    }
+}
 
 }

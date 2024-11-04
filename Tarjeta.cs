@@ -42,33 +42,21 @@ namespace TransporteUrbano
             return true;
         }
 
-        public virtual bool DescontarPasaje()
-        {
-            if (saldo >= CostoPasaje || saldo - CostoPasaje >= LimiteNegativo)
-            {
-                saldo -= CostoPasaje;
+         public virtual bool DescontarPasaje(bool esInterurbano)
+ {
+     if (EsNuevoMes()) ReiniciarViajesMensuales();
+     decimal costoViaje = CalcularCostoViaje(esInterurbano);
 
-                // Si hay saldo pendiente, acreditarlo en la tarjeta a medida que se gasta el saldo.
-                if (saldoPendiente > 0)
-                {
-                    decimal montoAcreditar = LimiteSaldo - saldo;
-                    if (montoAcreditar > saldoPendiente)
-                    {
-                        saldo += saldoPendiente;
-                        saldoPendiente = 0;
-                    }
-                    else
-                    {
-                        saldo += montoAcreditar;
-                        saldoPendiente -= montoAcreditar;
-                    }
-                }
-
-                return true;
-            }
-
-            return false;
-        }
+     if (saldo >= costoViaje || saldo - costoViaje >= LimiteNegativo)
+     {
+         saldo -= costoViaje;
+         ultimaFechaViaje = tiempo.Now();
+         viajesMesActual++;
+         AcreditarSaldoPendiente();
+         return true;
+     }
+     return false;
+ }
 
         public decimal ObtenerSaldo()
         {

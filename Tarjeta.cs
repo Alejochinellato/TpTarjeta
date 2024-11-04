@@ -151,29 +151,54 @@ namespace TransporteUrbano
 }
 
     public class FranquiciaCompleta : Tarjeta
-    {
-        public FranquiciaCompleta(decimal saldoInicial) : base(saldoInicial)
-        {
-        }
-        if (!EstaEnHorarioValido())
 {
-    Console.WriteLine("La Franquicia Completa no puede usarse fuera del horario permitido.");
-    return false;
-}
-        public override bool DescontarPasaje()
+    private int viajesGratuitosHoy = 0;
+    private const int MaxViajesGratuitos = 2;
+
+    public FranquiciaCompleta(decimal saldoInicial, Tiempo tiempo) : base(saldoInicial, tiempo) { }
+
+    public override bool DescontarPasaje(bool esInterurbano)
+    {
+        if (EsNuevoMes()) ReiniciarViajesMensuales();
+        if (EsNuevoDia()) ReiniciarViajesDiarios();
+
+        if (!EstaEnHorarioValido())
         {
-            
+            Console.WriteLine("La Franquicia Completa no puede usarse fuera del horario permitido.");
+            return false;
+        }
+
+        viajesDiarios++;
+
+        decimal costoViaje = CalcularCostoViaje(esInterurbano);
+
+        if (saldo >= costoViaje || saldo - costoViaje >= LimiteNegativo)
+        {
+            saldo -= costoViaje;
+            ultimaFechaViaje = tiempo.Now(); // Uso de tiempo en lugar de DateTime.Now
+            viajesMesActual++;
             return true;
         }
+
+        // Decrementar el contador de viajes si no se puede descontar el pasaje
+        viajesDiarios--;
+        return false;
     }
 
-    
-
+    protected override void ReiniciarViajesMensuales()
+    {
+        base.ReiniciarViajesMensuales();
+        viajesGratuitosHoy = 0;
     }
-        private bool EstaEnHorarioValido()
-        {
-            var ahora = tiempo.Now(); // Uso de tiempo en lugar de DateTime.Now
-            return ahora.DayOfWeek >= DayOfWeek.Monday && ahora.DayOfWeek <= DayOfWeek.Friday && ahora.Hour >= 6 && ahora.Hour <= 22;
-        }
+
+    protected override void ReiniciarViajesDiarios() => viajesGratuitosHoy = 0;
+
+    private bool EstaEnHorarioValido()
+    {
+        var ahora = tiempo.Now(); // Uso de tiempo en lugar de DateTime.Now
+        return ahora.DayOfWeek >= DayOfWeek.Monday && ahora.DayOfWeek <= DayOfWeek.Friday && ahora.Hour >= 6 && ahora.Hour <= 22;
+    }
+
+}
 }
 }

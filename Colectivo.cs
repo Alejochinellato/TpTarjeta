@@ -15,11 +15,11 @@ namespace TransporteUrbano
         }
 
 
-        public Boleto PagarCon(Tarjeta tarjeta , Tiempo tiempo)
+        public Boleto PagarCon(Tarjeta tarjeta, Tiempo tiempo)
         {
             if (tarjeta.DescontarPasaje(EsInterurbano))
             {
-                return new Boleto(tarjeta.CalcularCostoViaje(EsInterurbano), EsInterurbano ? "Interurbano" : "Urbano", Linea, tarjeta.ObtenerSaldo(), tarjeta.SaldoPendiente, tarjeta.ViajesMesActual, tarjeta.GetType().Name, tarjeta.Id,tiempo);
+                return new Boleto(tarjeta.CalcularCostoViaje(EsInterurbano), EsInterurbano ? "Interurbano" : "Urbano", Linea, tarjeta.ObtenerSaldo(), tarjeta.SaldoPendiente, tarjeta.ViajesMesActual, tarjeta.GetType().Name, tarjeta.Id, tiempo);
             }
             return null;
         }

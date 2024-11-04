@@ -81,80 +81,104 @@ namespace TransporteUrbano
         }
     }
 
-    public class MedioBoleto : Tarjeta
-{
-    private readonly decimal CostoMedioPasaje = CostoPasaje / 2;
-    private int viajesHoy = 0;
-    private DateTime? ultimaHoraDeViaje = null;
-    private const int MaxViajesPorDia = 4;
-    private static readonly TimeSpan IntervaloMinimo = TimeSpan.FromMinutes(5);
+       public MedioBoleto(decimal saldoInicial, Tiempo tiempo) : base(saldoInicial, tiempo) { }
 
-    public MedioBoleto(decimal saldoInicial) : base(saldoInicial)
+    public override bool DescontarPasaje(bool esInterurbano)
     {
-    }
+        if (EsNuevoMes()) ReiniciarViajesMensuales();
+        if (EsNuevoDia()) ReiniciarViajesDiarios();
 
-    public override bool DescontarPasaje()
-    {
-        if (EsNuevoDia())
+        if (!EstaEnHorarioValido())
         {
-            ReiniciarViajesDiarios();
-        }
-
-        DateTime ahora = DateTime.Now;
-
-        // Verificar si ha pasado el intervalo de 5 minutos
-        if (ultimaHoraDeViaje.HasValue && (ahora - ultimaHoraDeViaje.Value) < IntervaloMinimo)
-        {
-            Console.WriteLine("No se puede realizar otro viaje aún. Debes esperar 5 minutos.");
+            Console.WriteLine("La Franquicia Completa no puede usarse fuera del horario permitido.");
             return false;
         }
 
-        // Verificar si se ha excedido el límite de viajes con tarifa media
-        if (viajesHoy < MaxViajesPorDia)
+        if (ultimaFechaViaje.HasValue && (tiempo.Now() - ultimaFechaViaje.Value).TotalMinutes < 5)
         {
-            if (saldo >= CostoMedioPasaje || saldo - CostoMedioPasaje >= LimiteNegativo)
-            {
-                saldo -= CostoMedioPasaje;
-                return true;
-            }
-        }
-        else
-        {
-            // A partir del quinto viaje tenes que pagar tarifa completa
-            if (saldo >= CostoPasaje || saldo - CostoPasaje >= LimiteNegativo)
-            {
-                saldo -= CostoPasaje;
-                viajesHoy++;
-                ultimaHoraDeViaje = ahora;
-                ultimaFechaViaje = ahora; // Actualizar fecha del último viaje
-                return true;
-            }
+            Console.WriteLine("Debes esperar 5 minutos antes de realizar otro viaje con el MedioBoleto.");
+            return false; // Deniega el pago si no pasaron 5 minutos
         }
 
-        return false; // Saldo insuficiente
+
+        viajesDiarios++;
+
+        decimal costoViaje = CalcularCostoViaje(esInterurbano);
+
+        if (saldo >= costoViaje || saldo - costoViaje >= LimiteNegativo)
+        {
+            saldo -= costoViaje;
+            ultimaFechaViaje = tiempo.Now();
+            viajesMesActual++;
+            return true; // Viaje pagado realizado
+        }
+
+        // Decrementar el contador de viajes si no se puede descontar el pasaje
+        viajesDiarios--;
+        return false;
     }
+
 
     protected override void ReiniciarViajesDiarios()
     {
-        viajesHoy = 0;
+        viajesDiarios = 0;
     }
 
-    public int ViajesHoy
+    private bool EstaEnHorarioValido()
     {
-        get { return viajesHoy; }
+        var ahora = tiempo.Now();
+        return ahora.DayOfWeek >= DayOfWeek.Monday && ahora.DayOfWeek <= DayOfWeek.Friday && ahora.Hour >= 6 && ahora.Hour <= 22;
     }
 }
 
-    public class FranquiciaCompleta : Tarjeta
+   public class FranquiciaCompleta : Tarjeta
+{
+    private int viajesGratuitosHoy = 0;
+    private const int MaxViajesGratuitos = 2;
+
+    public FranquiciaCompleta(decimal saldoInicial, Tiempo tiempo) : base(saldoInicial, tiempo) { }
+
+    public override bool DescontarPasaje(bool esInterurbano)
     {
-        public FranquiciaCompleta(decimal saldoInicial) : base(saldoInicial)
+        if (EsNuevoMes()) ReiniciarViajesMensuales();
+        if (EsNuevoDia()) ReiniciarViajesDiarios();
+
+        if (!EstaEnHorarioValido())
         {
+            Console.WriteLine("La Franquicia Completa no puede usarse fuera del horario permitido.");
+            return false;
         }
 
-        public override bool DescontarPasaje()
+        viajesDiarios++;
+
+        decimal costoViaje = CalcularCostoViaje(esInterurbano);
+
+        if (saldo >= costoViaje || saldo - costoViaje >= LimiteNegativo)
         {
-            // La franquicia completa no necesita saldo
+            saldo -= costoViaje;
+            ultimaFechaViaje = tiempo.Now(); // Uso de tiempo en lugar de DateTime.Now
+            viajesMesActual++;
             return true;
         }
+
+        // Decrementar el contador de viajes si no se puede descontar el pasaje
+        viajesDiarios--;
+        return false;
     }
+
+    protected override void ReiniciarViajesMensuales()
+    {
+        base.ReiniciarViajesMensuales();
+        viajesGratuitosHoy = 0;
+    }
+
+    protected override void ReiniciarViajesDiarios() => viajesGratuitosHoy = 0;
+
+    private bool EstaEnHorarioValido()
+    {
+        var ahora = tiempo.Now(); // Uso de tiempo en lugar de DateTime.Now
+        return ahora.DayOfWeek >= DayOfWeek.Monday && ahora.DayOfWeek <= DayOfWeek.Friday && ahora.Hour >= 6 && ahora.Hour <= 22;
+    }
+
+}
 }

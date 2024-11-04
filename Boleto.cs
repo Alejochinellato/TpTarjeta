@@ -1,3 +1,5 @@
+using ManejoDeTiempos;
+
 using System;
 
 namespace TransporteUrbano
@@ -5,35 +7,42 @@ namespace TransporteUrbano
     public class Boleto
     {
         public decimal Monto { get; }
-        public string Tipo { get; }
+        public string TipoColectivo { get; }
         public string Linea { get; }
         public decimal SaldoRestante { get; }
-        public int ViajeId { get; }
-        public DateTime Fecha { get; }
+        public decimal SaldoPendiente { get; }
+        public int NumeroViaje { get; }
         public string TipoTarjeta { get; }
-        public decimal TotalAbonado { get; }
-        public int TarjetaId { get; }
-        public bool SaldoNegativoCancelado { get; }
+        public DateTime Fecha { get; }
+        public string IdTarjeta { get; }
 
-        public Boleto(decimal monto, string tipo, string linea, decimal saldoRestante, int viajeId, DateTime fecha, string tipoTarjeta, decimal totalAbonado, int tarjetaId, bool saldoNegativoCancelado)
+
+        public Boleto(decimal monto, string tipoColectivo, string linea, decimal saldoRestante, decimal saldoPendiente, int numeroViaje, string tipoTarjeta, string id, Tiempo tiempo)
         {
             Monto = monto;
-            Tipo = tipo;
+            TipoColectivo = tipoColectivo;
             Linea = linea;
             SaldoRestante = saldoRestante;
-            ViajeId = viajeId;
-            Fecha = fecha;
+            SaldoPendiente = saldoPendiente;
+            NumeroViaje = numeroViaje;
             TipoTarjeta = tipoTarjeta;
-            TotalAbonado = totalAbonado;
-            TarjetaId = tarjetaId;
-            SaldoNegativoCancelado = saldoNegativoCancelado;
+            Fecha = tiempo.Now();
+            IdTarjeta = id;
         }
 
-        public void MostrarDetalles()
+        public void Imprimir()
         {
-            Console.WriteLine($"Boleto {ViajeId} - Fecha: {Fecha.ToString("dd/MM/yyyy HH:mm")} - Tipo de Tarjeta: {TipoTarjeta} - Línea: {Linea}");
-            Console.WriteLine($"Monto: ${Monto} - Total Abonado: ${TotalAbonado} - Saldo Restante: ${SaldoRestante}");
-            Console.WriteLine(SaldoNegativoCancelado ? "Se canceló el saldo negativo con este boleto." : "No había saldo negativo pendiente.");
+            Console.WriteLine("-----------------------------");
+            Console.WriteLine($"Boleto #{NumeroViaje}");
+            Console.WriteLine($"Fecha: {Fecha}");
+            Console.WriteLine($"Tipo Tarjeta: {TipoTarjeta}");
+            Console.WriteLine($"Tipo Colectivo: {TipoColectivo}");
+            Console.WriteLine($"Línea: {Linea}");
+            Console.WriteLine($"Monto Abonado: ${Monto}");
+            Console.WriteLine($"Saldo Restante: ${SaldoRestante}");
+            Console.WriteLine($"Saldo Pendiente por Acreditar: ${SaldoPendiente}");
+            Console.WriteLine($"ID Tarjeta: {IdTarjeta}");
+            Console.WriteLine("-----------------------------");
         }
     }
 }

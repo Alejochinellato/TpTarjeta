@@ -1,244 +1,230 @@
 using System;
-using System.Linq;
+using ManejoDeTiempos;
 
 namespace TransporteUrbano
 {
     public class Tarjeta
     {
-        public decimal saldo;
-        public decimal saldoPendiente;
-        public const decimal CostoPasaje = 940m;
-        public const decimal LimiteSaldo = 36000m;
-        public const decimal LimiteNegativo = -480m;
+        public const decimal LimiteSaldo = 36000;
+        public const decimal LimiteNegativo = -480;
+        public static decimal CostoPasaje = 1200;
+        protected decimal saldo;
+        protected decimal saldoPendiente;
+        protected DateTime? ultimaFechaViaje;
+        protected int viajesMesActual = 0;
+        protected int viajesDiarios = 0;
+        public string Id { get; }
+        protected Tiempo tiempo;  // Dependencia de tiempo
 
-        private static readonly decimal[] MontosAceptados = { 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000 };
-
-        // New fields for frequent user discount
-        private int viajesMensuales = 0;
-        private DateTime ultimaFechaDeViaje = DateTime.Now;
-
-        public Tarjeta(decimal saldoInicial)
+        public Tarjeta(decimal saldoInicial, Tiempo tiempo)
         {
-            saldo = saldoInicial > LimiteSaldo ? LimiteSaldo : saldoInicial;
+            saldo = saldoInicial <= LimiteSaldo ? saldoInicial : LimiteSaldo;
             saldoPendiente = saldoInicial > LimiteSaldo ? saldoInicial - LimiteSaldo : 0;
+            Id = Guid.NewGuid().ToString();
+            this.tiempo = tiempo;
         }
+
+        public virtual bool DescontarPasaje(bool esInterurbano)
+        {
+            if (EsNuevoMes()) ReiniciarViajesMensuales();
+            decimal costoViaje = CalcularCostoViaje(esInterurbano);
+
+            if (saldo >= costoViaje || saldo - costoViaje >= LimiteNegativo)
+            {
+                saldo -= costoViaje;
+                ultimaFechaViaje = tiempo.Now();
+                viajesMesActual++;
+                AcreditarSaldoPendiente();
+                return true;
+            }
+            return false;
+        }
+
+        protected bool EsNuevoMes() => ultimaFechaViaje?.Month != tiempo.Now().Month;
+        protected bool EsNuevoDia() => ultimaFechaViaje?.Date != tiempo.Now().Date;
+
+        protected virtual void ReiniciarViajesMensuales() => viajesMesActual = 0;
+
+        public decimal ObtenerSaldo() => saldo;
 
         public bool CargarSaldo(decimal monto)
         {
-            if (!MontosAceptados.Contains(monto))
-            {
-                return false;
-            }
+            decimal[] montosValidos = { 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000 };
 
-            decimal saldoTotal = saldo + saldoPendiente + monto;
+            if (Array.IndexOf(montosValidos, monto) == -1) return false;
 
-            if (saldoTotal > LimiteSaldo)
+            decimal nuevoSaldo = saldo + monto;
+
+            if (nuevoSaldo > LimiteSaldo)
             {
+                saldoPendiente += nuevoSaldo - LimiteSaldo;
                 saldo = LimiteSaldo;
-                saldoPendiente = saldoTotal - LimiteSaldo;
             }
             else
             {
-                saldo += monto;
+                saldo = nuevoSaldo;
             }
 
             return true;
         }
 
-
-         public virtual bool DescontarPasaje(bool esInterurbano)
- {
-     if (EsNuevoMes()) ReiniciarViajesMensuales();
-     decimal costoViaje = CalcularCostoViaje(esInterurbano);
-
-     if (saldo >= costoViaje || saldo - costoViaje >= LimiteNegativo)
-     {
-         saldo -= costoViaje;
-         ultimaFechaViaje = tiempo.Now();
-         viajesMesActual++;
-         AcreditarSaldoPendiente();
-         return true;
-     }
-     return false;
- }
-
-
-        // Calculates the fare based on the number of trips this month
-        private decimal CalcularCostoPasaje()
+        private void AcreditarSaldoPendiente()
         {
-            if (viajesMensuales < 30)
+            if (saldoPendiente > 0)
             {
-                return CostoPasaje;
-            }
-            else if (viajesMensuales < 80)
-            {
-                return CostoPasaje * 0.8m;
-            }
-            else if (viajesMensuales < 81)
-            {
-                return CostoPasaje * 0.75m;
-            }
-            else
-            {
-                return CostoPasaje; 
+                decimal espacioDisponible = LimiteSaldo - saldo;
+                if (saldoPendiente <= espacioDisponible)
+                {
+                    saldo += saldoPendiente;
+                    saldoPendiente = 0;
+                }
+                else
+                {
+                    saldo += espacioDisponible;
+                    saldoPendiente -= espacioDisponible;
+                }
             }
         }
 
-        public decimal ObtenerSaldo()
+
+        protected virtual void ReiniciarViajesDiarios() { }
+
+        public decimal CalcularCostoViaje(bool esInterurbano)
         {
-            return saldo;
+            decimal costoBase = esInterurbano ? 2500 : 1200;
+
+            if (this is MedioBoleto)
+            {
+                decimal costo = viajesDiarios > 4 ? costoBase : costoBase / 2;
+
+                return costo;
+            }
+
+            if (this is FranquiciaCompleta)
+            {
+                decimal costo = viajesDiarios > 2 ? costoBase : 0;
+
+                return costo;
+            }
+
+            // Para otras tarjetas (tarjeta regular)
+            if (viajesMesActual < 29) return costoBase;
+            if (viajesMesActual < 79) return costoBase * 0.8m;
+            if (viajesMesActual < 81) return costoBase * 0.75m;
+            return costoBase;
         }
 
-        public decimal ObtenerSaldoPendiente()
-        {
-            return saldoPendiente;
-        }
-        
-        public int ObtenerViajesMensuales()
-        {
-            return viajesMensuales;
-        }
+
+
+
+        public decimal SaldoPendiente => saldoPendiente;
+
+        public int ViajesMesActual => viajesMesActual;
     }
-
 
     public class MedioBoleto : Tarjeta
     {
-        private readonly decimal CostoMedioPasaje = CostoPasaje / 2;
-        private int viajesHoy = 0;
-        private DateTime? ultimaHoraDeViaje = null;
-        private const int MaxViajesPorDia = 4;
-        private static readonly TimeSpan IntervaloMinimo = TimeSpan.FromMinutes(5);
+        public const int MaxViajesDiarios = 4;
 
+        public MedioBoleto(decimal saldoInicial, Tiempo tiempo) : base(saldoInicial, tiempo) { }
 
-        public MedioBoleto(decimal saldoInicial) : base(saldoInicial)
-
-    public override bool DescontarPasaje()
-    {
-    if (!EstaEnHorarioValido())
-{
-    Console.WriteLine("La Franquicia Completa no puede usarse fuera del horario permitido.");
-    return false;
-}
-        if (EsNuevoDia())
-
+        public override bool DescontarPasaje(bool esInterurbano)
         {
-        }
+            if (EsNuevoMes()) ReiniciarViajesMensuales();
+            if (EsNuevoDia()) ReiniciarViajesDiarios();
 
-        public override bool DescontarPasaje()
-        {
-
-            if (DateTime.Now.Day != ultimaFechaDeViaje.Day)
+            if (!EstaEnHorarioValido())
             {
-                ReiniciarViajesDiarios();
+                Console.WriteLine("La Franquicia Completa no puede usarse fuera del horario permitido.");
+                return false;
             }
 
-            DateTime ahora = DateTime.Now;
-
-            // Verificar si ha pasado el intervalo de 5 minutos
-            if (ultimaHoraDeViaje.HasValue && (ahora - ultimaHoraDeViaje.Value) < IntervaloMinimo)
-
-            Console.WriteLine("No se puede realizar otro viaje aún. Debes esperar 5 minutos.");
-            return false;
-        }
-        
-    
-        if (viajesHoy < MaxViajesPorDia)
-        {
-            if (saldo >= CostoMedioPasaje || saldo - CostoMedioPasaje >= LimiteNegativo)
-
+            if (ultimaFechaViaje.HasValue && (tiempo.Now() - ultimaFechaViaje.Value).TotalMinutes < 5)
             {
-                Console.WriteLine("No se puede realizar otro viaje aún. Debes esperar 5 minutos.");
-                return false;
-     
-
-        viajesDiarios++;
-
-        decimal costoViaje = CalcularCostoViaje(esInterurbano);
-
-        if (saldo >= costoViaje || saldo - costoViaje >= LimiteNegativo)
-        {
-
-            saldo -= costoViaje;
-            ultimaFechaViaje = tiempo.Now();
-            viajesMesActual++;
-            return true; // Viaje pagado realizado
-        }
-
-        // Decrementar el contador de viajes si no se puede descontar el pasaje
-        viajesDiarios--;
-        return false;
-    }
+                Console.WriteLine("Debes esperar 5 minutos antes de realizar otro viaje con el MedioBoleto.");
+                return false; // Deniega el pago si no pasaron 5 minutos
+            }
 
 
-    protected override void ReiniciarViajesDiarios()
-    {
-        viajesDiarios = 0;
-    }
+            viajesDiarios++;
 
-    private bool EstaEnHorarioValido()
-    {
-        var ahora = tiempo.Now();
-        return ahora.DayOfWeek >= DayOfWeek.Monday && ahora.DayOfWeek <= DayOfWeek.Friday && ahora.Hour >= 6 && ahora.Hour <= 22;
+            decimal costoViaje = CalcularCostoViaje(esInterurbano);
 
-        public int ViajesHoy
-        {
-            get { return viajesHoy; }
-        }
+            if (saldo >= costoViaje || saldo - costoViaje >= LimiteNegativo)
+            {
+                saldo -= costoViaje;
+                ultimaFechaViaje = tiempo.Now();
+                viajesMesActual++;
+                return true; // Viaje pagado realizado
+            }
 
-    }
-
-
-   public class FranquiciaCompleta : Tarjeta
-
-{
-    private int viajesGratuitosHoy = 0;
-    private const int MaxViajesGratuitos = 2;
-
-    public FranquiciaCompleta(decimal saldoInicial, Tiempo tiempo) : base(saldoInicial, tiempo) { }
-
-    public override bool DescontarPasaje(bool esInterurbano)
-    {
-        if (EsNuevoMes()) ReiniciarViajesMensuales();
-        if (EsNuevoDia()) ReiniciarViajesDiarios();
-
-        if (!EstaEnHorarioValido())
-        {
-            Console.WriteLine("La Franquicia Completa no puede usarse fuera del horario permitido.");
+            // Decrementar el contador de viajes si no se puede descontar el pasaje
+            viajesDiarios--;
             return false;
         }
 
-        viajesDiarios++;
 
-        decimal costoViaje = CalcularCostoViaje(esInterurbano);
-
-        if (saldo >= costoViaje || saldo - costoViaje >= LimiteNegativo)
+        protected override void ReiniciarViajesDiarios()
         {
-
-
-            saldo -= costoViaje;
-            ultimaFechaViaje = tiempo.Now(); 
-            viajesMesActual++;
-
-
-            return true;
+            viajesDiarios = 0;
         }
 
-        // Decrementar el contador de viajes si no se puede descontar el pasaje
-        viajesDiarios--;
-        return false;
+        private bool EstaEnHorarioValido()
+        {
+            var ahora = tiempo.Now();
+            return ahora.DayOfWeek >= DayOfWeek.Monday && ahora.DayOfWeek <= DayOfWeek.Friday && ahora.Hour >= 6 && ahora.Hour <= 22;
+        }
     }
 
-    protected override void ReiniciarViajesMensuales()
+
+    public class FranquiciaCompleta : Tarjeta
     {
-        base.ReiniciarViajesMensuales();
-        viajesGratuitosHoy = 0;
+        private int viajesGratuitosHoy = 0;
+        private const int MaxViajesGratuitos = 2;
+
+        public FranquiciaCompleta(decimal saldoInicial, Tiempo tiempo) : base(saldoInicial, tiempo) { }
+
+        public override bool DescontarPasaje(bool esInterurbano)
+        {
+            if (EsNuevoMes()) ReiniciarViajesMensuales();
+            if (EsNuevoDia()) ReiniciarViajesDiarios();
+
+            if (!EstaEnHorarioValido())
+            {
+                Console.WriteLine("La Franquicia Completa no puede usarse fuera del horario permitido.");
+                return false;
+            }
+
+            viajesDiarios++;
+
+            decimal costoViaje = CalcularCostoViaje(esInterurbano);
+
+            if (saldo >= costoViaje || saldo - costoViaje >= LimiteNegativo)
+            {
+                saldo -= costoViaje;
+                ultimaFechaViaje = tiempo.Now(); // Uso de tiempo en lugar de DateTime.Now
+                viajesMesActual++;
+                return true;
+            }
+
+            // Decrementar el contador de viajes si no se puede descontar el pasaje
+            viajesDiarios--;
+            return false;
+        }
+
+        protected override void ReiniciarViajesMensuales()
+        {
+            base.ReiniciarViajesMensuales();
+            viajesGratuitosHoy = 0;
+        }
+
+        protected override void ReiniciarViajesDiarios() => viajesGratuitosHoy = 0;
+
+        private bool EstaEnHorarioValido()
+        {
+            var ahora = tiempo.Now(); // Uso de tiempo en lugar de DateTime.Now
+            return ahora.DayOfWeek >= DayOfWeek.Monday && ahora.DayOfWeek <= DayOfWeek.Friday && ahora.Hour >= 6 && ahora.Hour <= 22;
+        }
+
     }
-
-    protected override void ReiniciarViajesDiarios() => viajesGratuitosHoy = 0;
-
-    private bool EstaEnHorarioValido()
-    {
-        var ahora = tiempo.Now(); // Uso de tiempo en lugar de DateTime.Now
-        return ahora.DayOfWeek >= DayOfWeek.Monday && ahora.DayOfWeek <= DayOfWeek.Friday && ahora.Hour >= 6 && ahora.Hour <= 22;
-}
 }

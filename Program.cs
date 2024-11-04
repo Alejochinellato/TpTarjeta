@@ -106,6 +106,16 @@ namespace TransporteUrbano
             }
         }
 
+        static Colectivo SeleccionarTipoColectivo()
+    {
+    Console.WriteLine("Ingrese la línea del colectivo:");
+    string linea = Console.ReadLine();
+
+    Console.WriteLine("¿Es un colectivo interurbano? (s/n):");
+    string interurbanoRespuesta = Console.ReadLine();
+    bool esInterurbano = interurbanoRespuesta.ToLower() == "s";
+    return new Colectivo(linea, esInterurbano);
+    }
         static void PagarBoleto(Tarjeta tarjeta, Colectivo colectivo)
         {
             try

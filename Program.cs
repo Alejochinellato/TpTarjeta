@@ -64,7 +64,6 @@ namespace TransporteUrbano
             }
         }
 
-
         static void MostrarMenu()
         {
 
@@ -81,6 +80,7 @@ namespace TransporteUrbano
         static void MostrarSaldo(Tarjeta tarjeta)
         {
             Console.WriteLine($"Saldo actual de la tarjeta: ${tarjeta.ObtenerSaldo()}");
+            Console.WriteLine($"Saldo pendiente de acreditación: ${tarjeta.ObtenerSaldoPendiente()}");
         }
 
         static void CargarSaldo(Tarjeta tarjeta)
@@ -98,6 +98,7 @@ namespace TransporteUrbano
             if (cargaExitosa)
             {
                 Console.WriteLine($"Saldo actual ${tarjeta.ObtenerSaldo()}");
+                Console.WriteLine($"Saldo pendiente de acreditación: ${tarjeta.ObtenerSaldoPendiente()}");
             }
             else
             {

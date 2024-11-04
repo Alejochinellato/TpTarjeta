@@ -17,11 +17,11 @@ namespace TransporteUrbano
             if (tarjeta.DescontarPasaje())
             {
                 decimal montoCobrado = tarjeta is MedioBoleto ? Tarjeta.CostoPasaje / 2 : Tarjeta.CostoPasaje;
-                return new Boleto(linea, Tarifa);
+                bool saldoNegativoCancelado = tarjeta.ObtenerSaldo() >= 0;
+                return new Boleto(montoCobrado, "Pasaje", linea, tarjeta.ObtenerSaldo(), viajeContador++, DateTime.Now, tarjeta.GetType().Name, montoCobrado, tarjeta.GetHashCode(), saldoNegativoCancelado);
             }
 
             return null;
         }
     }
 }
-

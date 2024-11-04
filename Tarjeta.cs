@@ -5,7 +5,9 @@ namespace TransporteUrbano
     public class Tarjeta
     {
         public decimal saldo;
+
         public decimal saldoPendiente; // Saldo pendiente de acreditación
+
         public const decimal CostoPasaje = 940m;  
         public const decimal LimiteSaldo = 6600m; // Nuevo límite de saldo
         public const decimal LimiteNegativo = -480m;
@@ -156,5 +158,3 @@ namespace TransporteUrbano
         }
     }
 }
-
-

@@ -66,6 +66,7 @@ namespace TransporteUrbano
 
         static void MostrarMenu()
         {
+
             Console.WriteLine("-------------------------------");
             Console.WriteLine("|          OPCIONES           |");
             Console.WriteLine("-------------------------------");

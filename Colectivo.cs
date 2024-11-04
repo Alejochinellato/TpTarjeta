@@ -1,27 +1,29 @@
 using System;
+using ManejoDeTiempos;
 
 namespace TransporteUrbano
 {
     public class Colectivo
     {
-        private string linea;
-        private static int viajeContador = 1;
+        public string Linea { get; }
+        public bool EsInterurbano { get; }
 
-        public Colectivo(string linea)
+        public Colectivo(string linea, bool esInterurbano = false)
         {
-            this.linea = linea;
+            Linea = linea;
+            EsInterurbano = esInterurbano;
         }
 
-        public Boleto PagarCon(Tarjeta tarjeta)
-        {
-            if (tarjeta.DescontarPasaje())
-            {
-                decimal montoCobrado = tarjeta is MedioBoleto ? Tarjeta.CostoPasaje / 2 : Tarjeta.CostoPasaje;
-                bool saldoNegativoCancelado = tarjeta.ObtenerSaldo() >= 0;
-                return new Boleto(montoCobrado, "Pasaje", linea, tarjeta.ObtenerSaldo(), viajeContador++, DateTime.Now, tarjeta.GetType().Name, montoCobrado, tarjeta.GetHashCode(), saldoNegativoCancelado);
-            }
 
+        public Boleto PagarCon(Tarjeta tarjeta , Tiempo tiempo)
+        {
+            if (tarjeta.DescontarPasaje(EsInterurbano))
+            {
+                return new Boleto(tarjeta.CalcularCostoViaje(EsInterurbano), EsInterurbano ? "Interurbano" : "Urbano", Linea, tarjeta.ObtenerSaldo(), tarjeta.SaldoPendiente, tarjeta.ViajesMesActual, tarjeta.GetType().Name, tarjeta.Id,tiempo);
+            }
             return null;
         }
+
+
     }
 }

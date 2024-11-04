@@ -100,6 +100,7 @@ namespace TransporteUrbano
         }
     }
 
+
     public class MedioBoleto : Tarjeta
     {
         private readonly decimal CostoMedioPasaje = CostoPasaje / 2;
@@ -148,50 +149,47 @@ namespace TransporteUrbano
             {
                 Console.WriteLine("No se puede realizar otro viaje aún. Debes esperar 5 minutos.");
                 return false;
-            }
+     
 
+        viajesDiarios++;
 
-            if (viajesHoy < MaxViajesPorDia)
+        decimal costoViaje = CalcularCostoViaje(esInterurbano);
 
-        }
-        else
+        if (saldo >= costoViaje || saldo - costoViaje >= LimiteNegativo)
         {
-          
-            if (saldo >= CostoPasaje || saldo - CostoPasaje >= LimiteNegativo)
 
-            {
-                if (saldo >= CostoMedioPasaje || saldo - CostoMedioPasaje >= LimiteNegativo)
-                {
-                    saldo -= CostoMedioPasaje;
-                    return true;
-                }
-            }
-            else
-            {
-                if (saldo >= CostoPasaje || saldo - CostoPasaje >= LimiteNegativo)
-                {
-                    saldo -= CostoPasaje;
-                    viajesHoy++;
-                    ultimaHoraDeViaje = ahora;
-                    return true;
-                }
-            }
-
-            return false;
+            saldo -= costoViaje;
+            ultimaFechaViaje = tiempo.Now();
+            viajesMesActual++;
+            return true; // Viaje pagado realizado
         }
 
-        protected override void ReiniciarViajesDiarios()
-        {
-            viajesHoy = 0;
-        }
+        // Decrementar el contador de viajes si no se puede descontar el pasaje
+        viajesDiarios--;
+        return false;
+    }
+
+
+    protected override void ReiniciarViajesDiarios()
+    {
+        viajesDiarios = 0;
+    }
+
+    private bool EstaEnHorarioValido()
+    {
+        var ahora = tiempo.Now();
+        return ahora.DayOfWeek >= DayOfWeek.Monday && ahora.DayOfWeek <= DayOfWeek.Friday && ahora.Hour >= 6 && ahora.Hour <= 22;
 
         public int ViajesHoy
         {
             get { return viajesHoy; }
         }
+
     }
 
-    public class FranquiciaCompleta : Tarjeta
+
+   public class FranquiciaCompleta : Tarjeta
+
 {
     private int viajesGratuitosHoy = 0;
     private const int MaxViajesGratuitos = 2;
@@ -216,9 +214,11 @@ namespace TransporteUrbano
         if (saldo >= costoViaje || saldo - costoViaje >= LimiteNegativo)
         {
 
+
             saldo -= costoViaje;
-            ultimaFechaViaje = tiempo.Now(); // Uso de tiempo en lugar de DateTime.Now
+            ultimaFechaViaje = tiempo.Now(); 
             viajesMesActual++;
+
 
             return true;
         }
@@ -240,8 +240,5 @@ namespace TransporteUrbano
     {
         var ahora = tiempo.Now(); // Uso de tiempo en lugar de DateTime.Now
         return ahora.DayOfWeek >= DayOfWeek.Monday && ahora.DayOfWeek <= DayOfWeek.Friday && ahora.Hour >= 6 && ahora.Hour <= 22;
-    }
-
-}
 }
 }

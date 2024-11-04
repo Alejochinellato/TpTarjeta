@@ -60,7 +60,6 @@ namespace TransporteUrbano
                 viajesMensuales++;
                 ultimaFechaDeViaje = DateTime.Now;
 
-                // If there is pending balance, apply it as the main balance depletes.
                 if (saldoPendiente > 0)
                 {
                     decimal montoAcreditar = LimiteSaldo - saldo;
@@ -127,12 +126,24 @@ namespace TransporteUrbano
         private const int MaxViajesPorDia = 4;
         private static readonly TimeSpan IntervaloMinimo = TimeSpan.FromMinutes(5);
 
+
         public MedioBoleto(decimal saldoInicial) : base(saldoInicial)
+
+    public override bool DescontarPasaje()
+    {
+    if (!EstaEnHorarioValido())
+{
+    Console.WriteLine("La Franquicia Completa no puede usarse fuera del horario permitido.");
+    return false;
+}
+        if (EsNuevoDia())
+
         {
         }
 
         public override bool DescontarPasaje()
         {
+
             if (DateTime.Now.Day != ultimaFechaDeViaje.Day)
             {
                 ReiniciarViajesDiarios();
@@ -142,12 +153,30 @@ namespace TransporteUrbano
 
             // Verificar si ha pasado el intervalo de 5 minutos
             if (ultimaHoraDeViaje.HasValue && (ahora - ultimaHoraDeViaje.Value) < IntervaloMinimo)
+
+            Console.WriteLine("No se puede realizar otro viaje aún. Debes esperar 5 minutos.");
+            return false;
+        }
+        
+    
+        if (viajesHoy < MaxViajesPorDia)
+        {
+            if (saldo >= CostoMedioPasaje || saldo - CostoMedioPasaje >= LimiteNegativo)
+
             {
                 Console.WriteLine("No se puede realizar otro viaje aún. Debes esperar 5 minutos.");
                 return false;
             }
 
+
             if (viajesHoy < MaxViajesPorDia)
+
+        }
+        else
+        {
+          
+            if (saldo >= CostoPasaje || saldo - CostoPasaje >= LimiteNegativo)
+
             {
                 if (saldo >= CostoMedioPasaje || saldo - CostoMedioPasaje >= LimiteNegativo)
                 {
@@ -181,14 +210,56 @@ namespace TransporteUrbano
     }
 
     public class FranquiciaCompleta : Tarjeta
+{
+    private int viajesGratuitosHoy = 0;
+    private const int MaxViajesGratuitos = 2;
+
+    public FranquiciaCompleta(decimal saldoInicial, Tiempo tiempo) : base(saldoInicial, tiempo) { }
+
+    public override bool DescontarPasaje(bool esInterurbano)
     {
-        public FranquiciaCompleta(decimal saldoInicial) : base(saldoInicial)
+        if (EsNuevoMes()) ReiniciarViajesMensuales();
+        if (EsNuevoDia()) ReiniciarViajesDiarios();
+
+        if (!EstaEnHorarioValido())
         {
+            Console.WriteLine("La Franquicia Completa no puede usarse fuera del horario permitido.");
+            return false;
         }
 
-        public override bool DescontarPasaje()
+        viajesDiarios++;
+
+        decimal costoViaje = CalcularCostoViaje(esInterurbano);
+
+        if (saldo >= costoViaje || saldo - costoViaje >= LimiteNegativo)
         {
+
+            saldo -= costoViaje;
+            ultimaFechaViaje = tiempo.Now(); // Uso de tiempo en lugar de DateTime.Now
+            viajesMesActual++;
+
             return true;
         }
+
+        // Decrementar el contador de viajes si no se puede descontar el pasaje
+        viajesDiarios--;
+        return false;
     }
+
+    protected override void ReiniciarViajesMensuales()
+    {
+        base.ReiniciarViajesMensuales();
+        viajesGratuitosHoy = 0;
+    }
+
+    protected override void ReiniciarViajesDiarios() => viajesGratuitosHoy = 0;
+
+    private bool EstaEnHorarioValido()
+    {
+        var ahora = tiempo.Now(); // Uso de tiempo en lugar de DateTime.Now
+        return ahora.DayOfWeek >= DayOfWeek.Monday && ahora.DayOfWeek <= DayOfWeek.Friday && ahora.Hour >= 6 && ahora.Hour <= 22;
+    }
+
+}
+}
 }

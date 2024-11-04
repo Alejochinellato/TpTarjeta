@@ -48,7 +48,7 @@ namespace TransporteUrbano
             {
                 saldo -= CostoPasaje;
 
-                // Si hay saldo pendiente, acreditarlo en la tarjeta a medida que se gasta el saldo.
+               
                 if (saldoPendiente > 0)
                 {
                     decimal montoAcreditar = LimiteSaldo - saldo;
@@ -95,6 +95,11 @@ namespace TransporteUrbano
 
     public override bool DescontarPasaje()
     {
+    if (!EstaEnHorarioValido())
+{
+    Console.WriteLine("La Franquicia Completa no puede usarse fuera del horario permitido.");
+    return false;
+}
         if (EsNuevoDia())
         {
             ReiniciarViajesDiarios();
@@ -108,8 +113,8 @@ namespace TransporteUrbano
             Console.WriteLine("No se puede realizar otro viaje aún. Debes esperar 5 minutos.");
             return false;
         }
-
-        // Verificar si se ha excedido el límite de viajes con tarifa media
+        
+    
         if (viajesHoy < MaxViajesPorDia)
         {
             if (saldo >= CostoMedioPasaje || saldo - CostoMedioPasaje >= LimiteNegativo)
@@ -120,7 +125,7 @@ namespace TransporteUrbano
         }
         else
         {
-            // A partir del quinto viaje tenes que pagar tarifa completa
+          
             if (saldo >= CostoPasaje || saldo - CostoPasaje >= LimiteNegativo)
             {
                 saldo -= CostoPasaje;
@@ -150,11 +155,25 @@ namespace TransporteUrbano
         public FranquiciaCompleta(decimal saldoInicial) : base(saldoInicial)
         {
         }
-
+        if (!EstaEnHorarioValido())
+{
+    Console.WriteLine("La Franquicia Completa no puede usarse fuera del horario permitido.");
+    return false;
+}
         public override bool DescontarPasaje()
         {
-            // La franquicia completa no necesita saldo
+            
             return true;
         }
     }
+
+    
+
+    }
+        private bool EstaEnHorarioValido()
+        {
+            var ahora = tiempo.Now(); // Uso de tiempo en lugar de DateTime.Now
+            return ahora.DayOfWeek >= DayOfWeek.Monday && ahora.DayOfWeek <= DayOfWeek.Friday && ahora.Hour >= 6 && ahora.Hour <= 22;
+        }
+}
 }

@@ -45,41 +45,23 @@ namespace TransporteUrbano
             return true;
         }
 
-        public virtual bool DescontarPasaje()
-        {
-            // Reset monthly trip count if a new month has started
-            if (DateTime.Now.Month != ultimaFechaDeViaje.Month)
-            {
-                viajesMensuales = 0;
-            }
 
-            decimal costoActual = CalcularCostoPasaje();
-            if (saldo >= costoActual || saldo - costoActual >= LimiteNegativo)
-            {
-                saldo -= costoActual;
-                viajesMensuales++;
-                ultimaFechaDeViaje = DateTime.Now;
+         public virtual bool DescontarPasaje(bool esInterurbano)
+ {
+     if (EsNuevoMes()) ReiniciarViajesMensuales();
+     decimal costoViaje = CalcularCostoViaje(esInterurbano);
 
-                if (saldoPendiente > 0)
-                {
-                    decimal montoAcreditar = LimiteSaldo - saldo;
-                    if (montoAcreditar > saldoPendiente)
-                    {
-                        saldo += saldoPendiente;
-                        saldoPendiente = 0;
-                    }
-                    else
-                    {
-                        saldo += montoAcreditar;
-                        saldoPendiente -= montoAcreditar;
-                    }
-                }
+     if (saldo >= costoViaje || saldo - costoViaje >= LimiteNegativo)
+     {
+         saldo -= costoViaje;
+         ultimaFechaViaje = tiempo.Now();
+         viajesMesActual++;
+         AcreditarSaldoPendiente();
+         return true;
+     }
+     return false;
+ }
 
-                return true;
-            }
-
-            return false;
-        }
 
         // Calculates the fare based on the number of trips this month
         private decimal CalcularCostoPasaje()

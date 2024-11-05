@@ -19,9 +19,9 @@ namespace MiProyecto_Tests
         }
 
         [Test]
-        public void PruebaUsoFrecuent()
+        public void PruebaUsoFrecuente()
         {
-            for (int i = 1; i<=30; i++)
+            for (int i = 1; i <= 30; i++)
             {
                 colectivo.PagarCon(tarjeta, tiempoFalso);
                 tarjeta.CargarSaldo(2000);
@@ -34,7 +34,7 @@ namespace MiProyecto_Tests
                 colectivo.PagarCon(tarjeta, tiempoFalso);
                 tarjeta.CargarSaldo(2000);
             }
-            
+
             Assert.That(tarjeta.CalcularCostoViaje(false), Is.EqualTo(1200 * 0.75));
 
             for (int i = 0; i <= 5; i++)
@@ -65,10 +65,10 @@ namespace MiProyecto_Tests
             colectivo.PagarCon(franquiciaCompleta, tiempoFalso);
             colectivo.PagarCon(medioBoleto, tiempoFalso);
 
-            Assert.That(franquiciaCompleta.ObtenerSaldo(), Is.EqualTo(2000)); //No puede viajar por estar fuera de dia valido
-            Assert.That(medioBoleto.ObtenerSaldo(), Is.EqualTo(2000)); //No puede viajar por estar fuera de dia valido
+            Assert.That(franquiciaCompleta.ObtenerSaldo(), Is.EqualTo(2000)); //No puede viajar por estar fuera de dia valido, el saldo no cambiÃ³
+            Assert.That(medioBoleto.ObtenerSaldo(), Is.EqualTo(2000)); //No puede viajar por estar fuera de dia valido,el saldo no cambiÃ³
 
-            tiempoFalso.AgregarDias(3);//15 hs del dia lunes 11/11/2024
+            tiempoFalso.AgregarDias(2);//15 hs del dia lunes 11/11/2024
 
             colectivo.PagarCon(franquiciaCompleta, tiempoFalso);
             colectivo.PagarCon(medioBoleto, tiempoFalso);
@@ -81,16 +81,14 @@ namespace MiProyecto_Tests
 
             Assert.That(medioBoleto.ObtenerSaldo(), Is.EqualTo(1400));// viaja y paga medio
 
-        }// <summary>
-        /// ////
-        /// </summary>
+        }
 
         [Test]
         public void PagarConTarjetaNormalConSaldoSuficienteViajeInterurbano()
         {
             // Arrange
             Tarjeta tarjeta = new Tarjeta(3000, tiempoFalso);
-            Colectivo colectivo = new Colectivo("Línea Interurbana", true);
+            Colectivo colectivo = new Colectivo("LÃ­nea Interurbana", true);
 
             // Act
             Boleto boleto = colectivo.PagarCon(tarjeta, tiempoFalso);
@@ -99,7 +97,7 @@ namespace MiProyecto_Tests
             Assert.IsNotNull(boleto);
             Assert.AreEqual(2500, boleto.Monto);
             Assert.AreEqual("Interurbano", boleto.TipoColectivo);
-            Assert.AreEqual("Línea Interurbana", boleto.Linea);
+            Assert.AreEqual("LÃ­nea Interurbana", boleto.Linea);
             Assert.AreEqual(500, boleto.SaldoRestante);
         }
 
@@ -108,13 +106,13 @@ namespace MiProyecto_Tests
         {
 
             Tarjeta tarjeta = new Tarjeta(2000, tiempoFalso);
-            Colectivo colectivo = new Colectivo("Línea Interurbana", true);
+            Colectivo colectivo = new Colectivo("LÃ­nea Interurbana", true);
 
 
             Boleto boleto = colectivo.PagarCon(tarjeta, tiempoFalso);
 
 
-            Assert.IsNull(boleto); // No debería permitir el viaje por saldo insuficiente
+            Assert.IsNull(boleto); // No deberÃ­a permitir el viaje por saldo insuficiente
             Assert.AreEqual(2000, tarjeta.ObtenerSaldo()); // El saldo debe permanecer igual
         }
 
@@ -124,7 +122,7 @@ namespace MiProyecto_Tests
 
             tiempoFalso.AgregarMinutos(60 * 15);//15:00
             FranquiciaCompleta tarjeta = new FranquiciaCompleta(3000, tiempoFalso);
-            Colectivo colectivo = new Colectivo("Línea Interurbana", true);
+            Colectivo colectivo = new Colectivo("LÃ­nea Interurbana", true);
 
 
             Boleto boleto = colectivo.PagarCon(tarjeta, tiempoFalso);
@@ -132,9 +130,9 @@ namespace MiProyecto_Tests
 
             Assert.IsNotNull(boleto);
             Assert.AreEqual(0, boleto.Monto);
-            Assert.AreEqual("Interurbano", boleto.TipoColectivo);
-            Assert.AreEqual("Línea Interurbana", boleto.Linea);
-            Assert.AreEqual(3000, boleto.SaldoRestante);
+            Assert.AreEqual("Interurbano", boleto.TipoColectivo); //es interurbano
+            Assert.AreEqual("LÃ­nea Interurbana", boleto.Linea);
+            Assert.AreEqual(3000, boleto.SaldoRestante); //no cambia el saldo
         }
 
         [Test]
@@ -142,7 +140,7 @@ namespace MiProyecto_Tests
         {
             tiempoFalso.AgregarMinutos(60 * 15);//15:00
             MedioBoleto medioBoleto = new MedioBoleto(5000, tiempoFalso);
-            Colectivo colectivo = new Colectivo("Línea Interurbana", true);
+            Colectivo colectivo = new Colectivo("LÃ­nea Interurbana", true);
 
 
             Boleto boleto = colectivo.PagarCon(medioBoleto, tiempoFalso);
@@ -150,8 +148,8 @@ namespace MiProyecto_Tests
 
             Assert.IsNotNull(boleto);
             Assert.AreEqual(1250, boleto.Monto); // Precio medio boleto interurbano
-            Assert.AreEqual("Interurbano", boleto.TipoColectivo);
-            Assert.AreEqual("Línea Interurbana", boleto.Linea);
+            Assert.AreEqual("Interurbano", boleto.TipoColectivo);//es interurbano
+            Assert.AreEqual("LÃ­nea Interurbana", boleto.Linea);
             Assert.AreEqual(3750, boleto.SaldoRestante);
         }
 
@@ -160,13 +158,13 @@ namespace MiProyecto_Tests
         {
             tiempoFalso.AgregarMinutos(60 * 15);//15:00
             MedioBoleto medioBoleto = new MedioBoleto(500, tiempoFalso); // Saldo insuficiente
-            Colectivo colectivo = new Colectivo("Línea Interurbana", true);
+            Colectivo colectivo = new Colectivo("LÃ­nea Interurbana", true);
 
 
             Boleto boleto = colectivo.PagarCon(medioBoleto, tiempoFalso);
 
 
-            Assert.IsNull(boleto); // No debería permitir el viaje por saldo insuficiente
+            Assert.IsNull(boleto); // No deberÃ­a permitir el viaje por saldo insuficiente
             Assert.AreEqual(500, medioBoleto.ObtenerSaldo()); // El saldo debe permanecer igual
         }
     }

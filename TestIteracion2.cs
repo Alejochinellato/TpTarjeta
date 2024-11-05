@@ -35,18 +35,23 @@ namespace MiProyecto_Tests
 
             var tiempoFalso = new TiempoFalso();
             Tarjeta tarjeta = new Tarjeta(2000, tiempoFalso);  // Tarjeta con saldo suficiente
-            Colectivo colectivo = new Colectivo("LÌnea A", false);
+            Colectivo colectivo = new Colectivo("L√≠nea A", false);
 
 
             Boleto boleto = colectivo.PagarCon(tarjeta, tiempoFalso);
 
 
-            Assert.IsNotNull(boleto, "El boleto deberÌa generarse correctamente.");
-            Assert.AreEqual(800, boleto.SaldoRestante, "El saldo restante deberÌa ser 800 despuÈs del pago.");
-            Assert.AreEqual(tiempoFalso.Now(), boleto.Fecha, "La fecha del boleto deberÌa coincidir con la fecha actual de TiempoFalso.");
-            Assert.AreEqual("LÌnea A", boleto.Linea, "La lÌnea del colectivo deberÌa ser 'LÌnea A'.");
-            Assert.AreEqual(1200, boleto.Monto, "El total abonado deberÌa ser 1200.");
-            Assert.AreEqual(tarjeta.Id, boleto.IdTarjeta, "El ID de la tarjeta deberÌa coincidir con el ID del boleto.");
+             
+            Assert.IsNotNull(boleto, "El boleto deber√≠a generarse correctamente.");
+            Assert.AreEqual("Urbano", boleto.TipoColectivo, "El tipo de colectivo deber√≠a ser Urbano(false).");
+            Assert.AreEqual(0, boleto.SaldoPendiente, "El saldo pendiento deber√≠a ser 0.");
+            Assert.AreEqual("Tarjeta", boleto.TipoTarjeta, "El tipo de la tarjeta deber√≠a ser Regular.");
+            Assert.AreEqual(1, boleto.NumeroViaje, "El n√∫mero de viaje deber√≠a ser 1.");
+            Assert.AreEqual(800, boleto.SaldoRestante, "El saldo restante deber√≠a ser 800 despu√©s del pago.");
+            Assert.AreEqual(tiempoFalso.Now(), boleto.Fecha, "La fecha del boleto deber√≠a coincidir con la fecha actual de TiempoFalso.");
+            Assert.AreEqual("L√≠nea A", boleto.Linea, "La l√≠nea del colectivo deber√≠a ser 'L√≠nea A'.");
+            Assert.AreEqual(1200, boleto.Monto, "El total abonado deber√≠a ser 1200.");
+            Assert.AreEqual(tarjeta.Id, boleto.IdTarjeta, "El ID de la tarjeta deber√≠a coincidir con el ID del boleto.");
         }
 
         [Test]

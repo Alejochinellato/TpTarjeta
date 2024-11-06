@@ -1,3 +1,30 @@
+#|-----------------------------------------------------------------|
+#| EL ARCHIVO SLN ESTA DENTRO DE LA CARPETA TPSube_AC_y_FG_Tests   |
+#|-----------------------------------------------------------------|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Trabajo Tarjeta: Versión 2024
 El siguiente trabajo es un enunciado iterativo. Todas las semanas nuevos requerimientos serán agregados y/o modificados para ilustrar la dinámica de desarrollo de software.
 ## Iteración 1.

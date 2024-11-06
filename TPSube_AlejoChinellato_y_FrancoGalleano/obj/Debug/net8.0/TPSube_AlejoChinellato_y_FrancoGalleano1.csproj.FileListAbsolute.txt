@@ -1,0 +1,14 @@
+C:\Users\chine\source\repos\TPSube_AlejoChinellato_y_FrancoGalleano1\bin\Debug\net8.0\TPSube_AlejoChinellato_y_FrancoGalleano1.exe
+C:\Users\chine\source\repos\TPSube_AlejoChinellato_y_FrancoGalleano1\bin\Debug\net8.0\TPSube_AlejoChinellato_y_FrancoGalleano1.deps.json
+C:\Users\chine\source\repos\TPSube_AlejoChinellato_y_FrancoGalleano1\bin\Debug\net8.0\TPSube_AlejoChinellato_y_FrancoGalleano1.runtimeconfig.json
+C:\Users\chine\source\repos\TPSube_AlejoChinellato_y_FrancoGalleano1\bin\Debug\net8.0\TPSube_AlejoChinellato_y_FrancoGalleano1.dll
+C:\Users\chine\source\repos\TPSube_AlejoChinellato_y_FrancoGalleano1\bin\Debug\net8.0\TPSube_AlejoChinellato_y_FrancoGalleano1.pdb
+C:\Users\chine\source\repos\TPSube_AlejoChinellato_y_FrancoGalleano1\obj\Debug\net8.0\TPSube_AlejoChinellato_y_FrancoGalleano1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\chine\source\repos\TPSube_AlejoChinellato_y_FrancoGalleano1\obj\Debug\net8.0\TPSube_AlejoChinellato_y_FrancoGalleano1.AssemblyInfoInputs.cache
+C:\Users\chine\source\repos\TPSube_AlejoChinellato_y_FrancoGalleano1\obj\Debug\net8.0\TPSube_AlejoChinellato_y_FrancoGalleano1.AssemblyInfo.cs
+C:\Users\chine\source\repos\TPSube_AlejoChinellato_y_FrancoGalleano1\obj\Debug\net8.0\TPSube_AlejoChinellato_y_FrancoGalleano1.csproj.CoreCompileInputs.cache
+C:\Users\chine\source\repos\TPSube_AlejoChinellato_y_FrancoGalleano1\obj\Debug\net8.0\TPSube_AlejoChinellato_y_FrancoGalleano1.dll
+C:\Users\chine\source\repos\TPSube_AlejoChinellato_y_FrancoGalleano1\obj\Debug\net8.0\refint\TPSube_AlejoChinellato_y_FrancoGalleano1.dll
+C:\Users\chine\source\repos\TPSube_AlejoChinellato_y_FrancoGalleano1\obj\Debug\net8.0\TPSube_AlejoChinellato_y_FrancoGalleano1.pdb
+C:\Users\chine\source\repos\TPSube_AlejoChinellato_y_FrancoGalleano1\obj\Debug\net8.0\TPSube_AlejoChinellato_y_FrancoGalleano1.genruntimeconfig.cache
+C:\Users\chine\source\repos\TPSube_AlejoChinellato_y_FrancoGalleano1\obj\Debug\net8.0\ref\TPSube_AlejoChinellato_y_FrancoGalleano1.dll

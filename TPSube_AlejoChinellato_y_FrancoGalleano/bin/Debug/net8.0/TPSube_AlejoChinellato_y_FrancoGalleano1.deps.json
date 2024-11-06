@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "TPSube_AlejoChinellato_y_FrancoGalleano1/1.0.0": {
+        "runtime": {
+          "TPSube_AlejoChinellato_y_FrancoGalleano1.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "TPSube_AlejoChinellato_y_FrancoGalleano1/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
